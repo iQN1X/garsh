@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>غرسة - إدارة ورعاية النباتات</title>
+    <meta name="theme-color" content="#2e7d32" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>غرسة</h1>
+      <p class="subtitle">إدارة ورعاية النباتات على الجوال والكمبيوتر</p>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="التنقل">
+      <button class="tab active" data-view="plants" aria-selected="true" data-i18n="tabs.plants">نباتاتي</button>
+      <button class="tab" data-view="search" data-i18n="tabs.search">البحث</button>
+      <button class="tab" data-view="care" data-i18n="tabs.care">العناية</button>
+      <button class="tab" data-view="encyclopedia" data-i18n="tabs.encyclopedia">الموسوعة</button>
+      <button class="tab" data-view="dashboard" data-i18n="tabs.dashboard">لوحة التحكم</button>
+      <button class="tab" data-view="settings" data-i18n="tabs.settings">الإعدادات</button>
+      <div class="lang-switch">
+        <label for="lang-select" data-i18n="labels.language">اللغة</label>
+        <select id="lang-select">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </nav>
+
+    <main id="views" class="views">
+      <!-- Plants Management -->
+      <section id="view-plants" class="view active" aria-labelledby="plants">
+        <h2 data-i18n="titles.plants">نظام إدارة النباتات</h2>
+        <form id="plant-form" class="card form">
+          <div class="row">
+            <label data-i18n="labels.plantName">اسم النبتة</label>
+            <input type="text" id="plant-name" placeholder="مثال: طماطم الشرفة" required />
+          </div>
+          <div class="row">
+            <label data-i18n="labels.species">النوع</label>
+            <input list="species-list" id="plant-species" placeholder="اختر أو اكتب النوع" />
+            <datalist id="species-list"></datalist>
+          </div>
+          <div class="row">
+            <label data-i18n="labels.plantedDate">تاريخ الزراعة</label>
+            <input type="date" id="plant-date" required />
+          </div>
+          <div class="row">
+            <label data-i18n="labels.notes">ملاحظات</label>
+            <textarea id="plant-notes" rows="2" placeholder="معلومات إضافية"></textarea>
+          </div>
+          <div class="row">
+            <label data-i18n="labels.initialPhoto">صورة أولية</label>
+            <input type="file" id="plant-photo" accept="image/*" capture="environment" />
+          </div>
+          <button type="submit" class="primary" data-i18n="actions.addPlant">إضافة النبتة</button>
+        </form>
+
+        <div id="plants-list" class="grid"></div>
+      </section>
+
+      <!-- Plant Detail -->
+      <section id="view-plant" class="view" aria-labelledby="plant">
+        <h2 id="plant-detail-title">تفاصيل النبتة</h2>
+        <div id="plant-detail" class="grid">
+          <div class="card">
+            <h3>الملخص</h3>
+            <div id="plant-summary"></div>
+            <div class="actions">
+              <button id="back-to-plants" class="secondary">عودة</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>سجل اليوم</h3>
+            <div class="form">
+              <div class="row cols">
+                <label><input type="checkbox" id="log-watered"/> تم الري</label>
+                <label><input type="checkbox" id="log-fertilized"/> تم التسميد</label>
+              </div>
+              <div class="row">
+                <textarea id="log-note" rows="2" placeholder="ملاحظة اليوم"></textarea>
+              </div>
+              <div class="actions">
+                <button id="save-today-log" class="primary">حفظ سجل اليوم</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>الخط الزمني اليومي</h3>
+            <div id="daily-timeline" class="timeline"></div>
+          </div>
+          <div class="card">
+            <h3>توقع شكل النبتة</h3>
+            <div class="form">
+              <div class="row cols">
+                <div>
+                  <label>أيام قادمة</label>
+                  <input type="number" id="predict-days" min="0" value="14" />
+                </div>
+                <div>
+                  <label>المرحلة المتوقعة</label>
+                  <div id="predicted-stage" class="plant-meta">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="growth-visual">
+              <div id="growth-bar" class="growth-bar"><span></span></div>
+              <small id="growth-hint" class="plant-meta"></small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advanced Search -->
+      <section id="view-search" class="view" aria-labelledby="search">
+        <h2 data-i18n="titles.search">بحث متقدم</h2>
+        <div class="card form">
+          <div class="row">
+            <label data-i18n="labels.searchText">نص البحث</label>
+            <input type="text" id="search-text" placeholder="اسم أو نوع" />
+          </div>
+          <div class="row">
+            <label data-i18n="labels.filterSpecies">فلتر النوع</label>
+            <input list="species-list" id="filter-species" placeholder="اختر النوع" />
+          </div>
+          <div class="row">
+            <label data-i18n="labels.filterLight">الإضاءة</label>
+            <select id="filter-light">
+              <option value="">—</option>
+              <option value="شمس مباشرة">شمس مباشرة</option>
+              <option value="شمس غير مباشرة">شمس غير مباشرة</option>
+              <option value="ظل جزئي">ظل جزئي</option>
+            </select>
+          </div>
+          <div class="row cols">
+            <div>
+              <label data-i18n="labels.minDays">أقل أيام منذ الزراعة</label>
+              <input type="number" id="min-days" min="0" />
+            </div>
+            <div>
+              <label data-i18n="labels.maxDays">أقصى أيام منذ الزراعة</label>
+              <input type="number" id="max-days" min="0" />
+            </div>
+          </div>
+          <div class="row cols">
+            <div>
+              <label data-i18n="labels.waterEvery">ري كل (أيام)</label>
+              <input type="number" id="filter-water" min="0" />
+            </div>
+            <div>
+              <label data-i18n="labels.fertilizeEvery">تسميد كل (أيام)</label>
+              <input type="number" id="filter-fert" min="0" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="apply-filters" data-i18n="actions.applyFilters">تطبيق المرشحات</button>
+            <button class="secondary" id="reset-filters" data-i18n="actions.reset">إعادة ضبط</button>
+          </div>
+        </div>
+        <div id="search-results" class="grid"></div>
+      </section>
+
+      <!-- Care Requirements -->
+      <section id="view-care" class="view" aria-labelledby="care">
+        <h2 data-i18n="titles.care">متطلبات العناية</h2>
+        <div class="card">
+          <h3 data-i18n="subtitles.generalCare">متطلبات عامة لجميع النباتات</h3>
+          <form id="general-care-form" class="form">
+            <div class="row">
+              <label data-i18n="labels.waterEvery">الري كل (أيام)</label>
+              <input type="number" id="general-water" min="1" placeholder="مثال: 2" />
+            </div>
+            <div class="row">
+              <label data-i18n="labels.fertilizeEvery">التسميد كل (أيام)</label>
+              <input type="number" id="general-fertilize" min="1" placeholder="مثال: 14" />
+            </div>
+            <div class="row">
+              <label data-i18n="labels.light">الإضاءة</label>
+              <select id="general-light">
+                <option value="">—</option>
+                <option value="شمس مباشرة">شمس مباشرة</option>
+                <option value="شمس غير مباشرة">شمس غير مباشرة</option>
+                <option value="ظل جزئي">ظل جزئي</option>
+              </select>
+            </div>
+            <button type="submit" class="primary" data-i18n="actions.saveGeneralCare">حفظ المتطلبات العامة</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="subtitles.notifications">التنبيهات</h3>
+          <p data-i18n="texts.notificationsHint">للتذكير بالمهام، فعّل الإشعارات ثم سنعرض التنبيهات عند فتح التطبيق وفي المواعيد المستحقة أثناء الاستخدام.</p>
+          <div class="row">
+            <button id="enable-notifications" class="secondary" data-i18n="actions.enableNotifications">تفعيل الإشعارات</button>
+          </div>
+          <div id="reminders" class="list"></div>
+        </div>
+      </section>
+
+      <!-- Encyclopedia -->
+      <section id="view-encyclopedia" class="view" aria-labelledby="encyclopedia">
+        <h2 data-i18n="titles.encyclopedia">موسوعة النباتات</h2>
+        <div id="encyclopedia-list" class="grid"></div>
+        <div class="card form">
+          <h3 data-i18n="subtitles.manageEncyclopedia">إدارة الموسوعة</h3>
+          <div class="row cols">
+            <input type="text" id="ency-name" placeholder="اسم النوع" />
+            <input type="text" id="ency-germ" placeholder="أيام الإنبات" />
+          </div>
+          <div class="row cols">
+            <input type="text" id="ency-light" placeholder="الإضاءة" />
+            <input type="text" id="ency-water" placeholder="الري" />
+            <input type="text" id="ency-fert" placeholder="التسميد" />
+          </div>
+          <div class="row">
+            <input type="text" id="ency-stages" placeholder="المراحل مفصولة بفواصل" />
+          </div>
+          <button class="primary" id="ency-add" data-i18n="actions.addType">إضافة النوع</button>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="view-dashboard" class="view" aria-labelledby="dashboard">
+        <h2 data-i18n="titles.dashboard">لوحة التحكم</h2>
+        <div class="grid">
+          <div class="card"><h3 data-i18n="subtitles.totals">إجماليات</h3><div id="metric-totals"></div></div>
+          <div class="card"><h3 data-i18n="subtitles.performance">أداء</h3><div id="metric-performance"></div></div>
+          <div class="card"><h3 data-i18n="subtitles.activity">النشاط</h3><div id="metric-activity"></div></div>
+        </div>
+        <div class="card">
+          <h3 data-i18n="subtitles.dataManagement">إدارة البيانات</h3>
+          <div class="actions">
+            <button class="secondary" id="export-data" data-i18n="actions.exportData">تصدير</button>
+            <label class="secondary" data-i18n="actions.importDataLabel">استيراد<input type="file" id="import-data" accept="application/json" hidden/></label>
+            <button class="danger" id="reset-data" data-i18n="actions.resetData">إعادة تعيين</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="view-settings" class="view" aria-labelledby="settings">
+        <h2 data-i18n="titles.settings">الإعدادات</h2>
+        <div class="card">
+          <p data-i18n="texts.pwa">تطبيق ويب تقدمي (PWA) يعمل دون اتصال بعد التثبيت، ويدعم الجوال والكمبيوتر.</p>
+          <button id="install-button" class="primary" hidden data-i18n="actions.installApp">تثبيت التطبيق</button>
+        </div>
+        <div class="card">
+          <h3 data-i18n="subtitles.notificationsCenter">مركز الإشعارات</h3>
+          <div id="notification-center" class="list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <small>© 2025 غرسة</small>
+    </footer>
+
+    <script src="./encyclopedia.js"></script>
+    <script src="./app.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(console.error);
+        });
+      }
+    </script>
+  </body>
+  </html>
