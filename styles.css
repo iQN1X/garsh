@@ -26,6 +26,15 @@ body {
 .app-header h1 { margin: 0; font-size: 24px; color: var(--primary); }
 .subtitle { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
+/* Inventory icon */
+.icon-btn { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 999px; padding: 8px 12px; font-size: 16px; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.icon-btn:hover { background: #eef2f7; }
+.badge { background: var(--primary); color: var(--primary-ink); border-radius: 999px; padding: 2px 8px; font-size: 12px; }
+
+.inventory-panel { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.inventory-row { display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px dashed #e5e7eb; border-radius: 10px; background: #fbfbfb; }
+.inventory-info { display: grid; }
+
 .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 16px 16px; background: var(--card); }
 .tab {
   padding: 10px 8px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: var(--text);
@@ -62,6 +71,17 @@ button { cursor: pointer; }
 .growth-bar span { display: block; height: 100%; width: 0%; background: var(--accent); border-radius: 8px; }
 
 .app-footer { text-align: center; padding: 24px; color: var(--muted); }
+
+/* Encyclopedia thumbnails */
+.ency-card { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: start; }
+.ency-thumb { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb; background: #f3f4f6; }
+
+/* Encyclopedia choices */
+.ency-choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ency-choice { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--primary); background: #eef6ee; color: var(--primary); font-size: 16px; }
+.ency-choice img { width: 40px; height: 40px; }
+.ency-choice:hover { background: #e1f1e1; }
+.ency-choice:active { transform: scale(0.98); }
 
 /* Responsive */
 @media (min-width: 640px) {

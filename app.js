@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   generalCare: 'gharsa_general_care',
   lang: 'gharsa_lang',
   notifications: 'gharsa_notifications',
+  inventory: 'gharsa_inventory',
 };
 
 const state = {
@@ -13,6 +14,7 @@ const state = {
   lang: 'ar',
   notifications: [],
   currentPlantId: null,
+  inventory: [],
 };
 
 // أدوات
@@ -34,8 +36,10 @@ function save() {
   localStorage.setItem(STORAGE_KEYS.generalCare, JSON.stringify(state.generalCare));
   localStorage.setItem(STORAGE_KEYS.lang, state.lang);
   localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(state.notifications.slice(-100)));
+  localStorage.setItem(STORAGE_KEYS.inventory, JSON.stringify(state.inventory.slice(-300)));
   renderPlants();
   renderReminders();
+  renderInventory();
 }
 
 function load() {
@@ -43,10 +47,12 @@ function load() {
     const plants = JSON.parse(localStorage.getItem(STORAGE_KEYS.plants) || '[]');
     const general = JSON.parse(localStorage.getItem(STORAGE_KEYS.generalCare) || '{}');
     const notifications = JSON.parse(localStorage.getItem(STORAGE_KEYS.notifications) || '[]');
+    const inventory = JSON.parse(localStorage.getItem(STORAGE_KEYS.inventory) || '[]');
     state.plants = Array.isArray(plants) ? plants : [];
     state.generalCare = { ...state.generalCare, ...general };
     state.lang = localStorage.getItem(STORAGE_KEYS.lang) || 'ar';
     state.notifications = Array.isArray(notifications) ? notifications : [];
+    state.inventory = Array.isArray(inventory) ? inventory : [];
   } catch {}
 }
 
@@ -109,6 +115,16 @@ function setupNavigation() {
     langSelect.value = state.lang;
     langSelect.addEventListener('change', () => { state.lang = langSelect.value; save(); applyI18n(); });
   }
+
+  // المخزن: فتح/إغلاق
+  const invBtn = document.getElementById('inventory-btn');
+  const invPanel = document.getElementById('inventory-panel');
+  if (invBtn && invPanel) {
+    invBtn.addEventListener('click', () => {
+      const open = invPanel.style.display !== 'none';
+      invPanel.style.display = open ? 'none' : 'block';
+    });
+  }
 }
 
 function showView(target) {
@@ -116,6 +132,52 @@ function showView(target) {
   const el = document.getElementById(`view-${target}`);
   if (el) el.classList.add('active');
 }
+
+// المخزن
+function renderInventory() {
+  const panel = document.getElementById('inventory-panel');
+  const list = document.getElementById('inventory-list');
+  const badge = document.getElementById('inventory-count');
+  if (!panel || !list) return;
+  list.innerHTML = '';
+  if (badge) badge.textContent = String(state.inventory.length);
+  if (state.inventory.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'plant-meta';
+    empty.textContent = 'لا يوجد عناصر في المخزن بعد.';
+    list.appendChild(empty);
+    return;
+  }
+  state.inventory.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'inventory-row';
+    row.innerHTML = `
+      <div class="inventory-info">
+        <strong>${item.name}</strong>
+        <small class="plant-meta">${item.kind}</small>
+      </div>
+      <button class="danger" data-idx="${idx}">حذف</button>
+    `;
+    row.querySelector('button.danger').addEventListener('click', (e) => {
+      const i = Number(e.currentTarget.dataset.idx);
+      state.inventory.splice(i, 1);
+      save();
+    });
+    list.appendChild(row);
+  });
+}
+
+// واجهة عامة لإضافة عنصر للمخزن من أي ملف
+window.addToInventory = function(item) {
+  if (!item || !item.name) return;
+  const exists = state.inventory.some(x => x.kind === item.kind && x.id === item.id);
+  if (!exists) {
+    state.inventory.push({ kind: item.kind, id: item.id, name: item.name });
+    const invPanel = document.getElementById('inventory-panel');
+    if (invPanel) invPanel.style.display = 'block';
+    save();
+  }
+};
 
 // إدارة النباتات
 function renderPlants() {
@@ -257,6 +319,10 @@ const GROWTH_MODELS = {
   apple: [180, 360, 540],
   fig: [120, 300, 540],
   grape: [120, 300, 540],
+  // إضافات جديدة
+  okra: [10, 30, 60, 90],
+  olive: [240, 480, 960],
+  'date-palm': [360, 720, 1440],
 };
 
 function findSpeciesIdByName(name) {
@@ -626,6 +692,7 @@ function registerEvents() {
   renderDashboard();
   scheduleChecks();
   applyI18n();
+  renderInventory();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

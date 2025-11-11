@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84">
+  <rect width="84" height="84" rx="12" fill="#fce4ec"/>
+  <circle cx="42" cy="42" r="8" fill="#f48fb1"/>
+  <g fill="#f06292">
+    <circle cx="42" cy="24" r="8"/>
+    <circle cx="24" cy="42" r="8"/>
+    <circle cx="60" cy="42" r="8"/>
+    <circle cx="42" cy="60" r="8"/>
+  </g>
+  <text x="42" y="74" font-size="10" text-anchor="middle" fill="#ad1457">زهور</text>
+</svg>

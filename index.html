@@ -12,6 +12,9 @@
     <header class="app-header">
       <h1>غرسة</h1>
       <p class="subtitle">إدارة ورعاية النباتات على الجوال والكمبيوتر</p>
+      <button id="inventory-btn" class="icon-btn" aria-label="المخزن" title="المخزن" style="position:absolute; right:16px; top:16px;">
+        🧺 <span id="inventory-count" class="badge">0</span>
+      </button>
     </header>
 
     <nav class="tabs" role="tablist" aria-label="التنقل">
@@ -31,6 +34,14 @@
     </nav>
 
     <main id="views" class="views">
+      <!-- لوحة المخزن -->
+      <div id="inventory-panel" class="inventory-panel card" style="display:none; position:fixed; right:16px; top:72px; width:320px; max-height:60vh; overflow:auto; z-index:200;">
+        <div class="plant-header">
+          <strong>المخزن</strong>
+          <button class="secondary" onclick="document.getElementById('inventory-panel').style.display='none'">إغلاق</button>
+        </div>
+        <div id="inventory-list" class="list"></div>
+      </div>
       <!-- Plants Management -->
       <section id="view-plants" class="view active" aria-labelledby="plants">
         <h2 data-i18n="titles.plants">نظام إدارة النباتات</h2>
@@ -202,23 +213,94 @@
 
       <!-- Encyclopedia -->
       <section id="view-encyclopedia" class="view" aria-labelledby="encyclopedia">
-        <h2 data-i18n="titles.encyclopedia">موسوعة النباتات</h2>
-        <div id="encyclopedia-list" class="grid"></div>
-        <div class="card form">
-          <h3 data-i18n="subtitles.manageEncyclopedia">إدارة الموسوعة</h3>
-          <div class="row cols">
-            <input type="text" id="ency-name" placeholder="اسم النوع" />
-            <input type="text" id="ency-germ" placeholder="أيام الإنبات" />
+        <h2 data-i18n="titles.encyclopedia">الموسوعة</h2>
+        <div class="card">
+          <div class="row ency-choices">
+            <button type="button" id="btn-ency-plants" class="ency-choice">
+              <img src="./images/ency-plants.svg" alt="" aria-hidden="true" />
+              <span>موسوعة النبات</span>
+            </button>
+            <button type="button" id="btn-ency-soil" class="ency-choice">
+              <img src="./images/ency-soil.svg" alt="" aria-hidden="true" />
+              <span>موسوعة التربة</span>
+            </button>
+            <button type="button" id="btn-ency-fert" class="ency-choice">
+              <img src="./images/ency-fert.svg" alt="" aria-hidden="true" />
+              <span>موسوعة الأسمدة</span>
+            </button>
           </div>
-          <div class="row cols">
-            <input type="text" id="ency-light" placeholder="الإضاءة" />
-            <input type="text" id="ency-water" placeholder="الري" />
-            <input type="text" id="ency-fert" placeholder="التسميد" />
+        </div>
+
+        <h3 id="ency-title" class="ency-title"></h3>
+
+        <!-- موسوعة النبات -->
+        <div id="ency-plants" style="display:none">
+          <div class="card form">
+            <div class="row cols">
+              <input type="text" id="ency-search" placeholder="بحث في الموسوعة (اسم أو نوع)" />
+              <select id="ency-category" aria-label="قسم">
+                <option value="">الكل</option>
+                <option value="خضروات">خضروات</option>
+                <option value="فواكه">فواكه</option>
+                <option value="أعشاب">أعشاب</option>
+                <option value="زهور">زهور</option>
+                <option value="أشجار">أشجار</option>
+                <option value="منزلية">منزلية</option>
+                <option value="صبارات">صبارات</option>
+              </select>
+            </div>
           </div>
-          <div class="row">
-            <input type="text" id="ency-stages" placeholder="المراحل مفصولة بفواصل" />
+          <div id="encyclopedia-list" class="grid"></div>
+          <div class="card form">
+            <h3 data-i18n="subtitles.manageEncyclopedia">إدارة الموسوعة</h3>
+            <div class="row cols">
+              <input type="text" id="ency-name" placeholder="اسم النوع" />
+              <input type="text" id="ency-germ" placeholder="أيام الإنبات" />
+            </div>
+            <div class="row cols">
+              <input type="text" id="ency-light" placeholder="الإضاءة" />
+              <input type="text" id="ency-water" placeholder="الري" />
+              <input type="text" id="ency-fertilize" placeholder="التسميد" />
+              <input type="text" id="ency-height" placeholder="الطول التقريبي (اختياري)" />
+            </div>
+            <div class="row">
+              <select id="ency-add-category">
+                <option value="">قسم (اختياري)</option>
+                <option value="خضروات">خضروات</option>
+                <option value="فواكه">فواكه</option>
+                <option value="أعشاب">أعشاب</option>
+                <option value="زهور">زهور</option>
+                <option value="أشجار">أشجار</option>
+                <option value="منزلية">منزلية</option>
+                <option value="صبارات">صبارات</option>
+              </select>
+            </div>
+            <div class="row">
+              <input type="text" id="ency-image" placeholder="رابط صورة (اختياري)" />
+            </div>
+            <div class="row">
+              <input type="text" id="ency-stages" placeholder="المراحل مفصولة بفواصل" />
+            </div>
+            <button class="primary" id="ency-add" data-i18n="actions.addType">إضافة النوع</button>
           </div>
-          <button class="primary" id="ency-add" data-i18n="actions.addType">إضافة النوع</button>
+        </div>
+
+        <!-- موسوعة التربة -->
+        <div id="ency-soil" style="display:none">
+          <div class="card">
+            <h3>موسوعة التربة</h3>
+            <p class="plant-meta">اختر هذا القسم لعرض أنواع التربة وخصائصها.</p>
+          </div>
+          <div id="soil-list" class="grid"></div>
+        </div>
+
+        <!-- موسوعة الأسمدة -->
+        <div id="ency-fert" style="display:none">
+          <div class="card">
+            <h3>موسوعة الأسمدة</h3>
+            <p class="plant-meta">اختر هذا القسم لعرض أنواع الأسمدة وطريقة الاستخدام.</p>
+          </div>
+          <div id="fertilizer-list" class="grid"></div>
         </div>
       </section>
 
